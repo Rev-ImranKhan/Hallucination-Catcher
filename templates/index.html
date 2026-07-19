@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hallucination Catcher | LLM Grounding Evaluator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">HC</div>
+      <div>
+        <h1>Hallucination Catcher</h1>
+        <p class="tagline">Grounding evaluation for RAG systems</p>
+      </div>
+    </div>
+    <div class="status-pill" id="docStatusPill">No document loaded</div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ============ LEFT PANEL: Upload + Questions ============ -->
+    <section class="panel upload-panel">
+      <h2 class="panel-title">1. Source Document</h2>
+      <p class="panel-sub">Upload the PDF/text that acts as your "source of truth". All answers will be checked for grounding against this file.</p>
+
+      <form id="uploadForm">
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" name="document" accept=".pdf,.txt" hidden>
+          <div class="dropzone-inner">
+            <span class="dz-icon">⇪</span>
+            <span id="dzText">Click to choose a PDF or TXT file</span>
+          </div>
+        </label>
+        <button type="submit" class="btn btn-primary" id="uploadBtn">Process Document</button>
+      </form>
+
+      <div id="uploadResult" class="upload-result hidden"></div>
+
+      <div id="questionsSection" class="hidden">
+        <h2 class="panel-title mt">2. Test Questions</h2>
+        <p class="panel-sub">Select the generic questions to run, or add your own.</p>
+
+        <div class="question-list" id="questionList"></div>
+
+        <div class="custom-question-row">
+          <input type="text" id="customQuestionInput" placeholder="Add a custom question...">
+          <button type="button" class="btn btn-ghost" id="addQuestionBtn">Add</button>
+        </div>
+
+        <button type="button" class="btn btn-accent" id="runEvalBtn">Run Evaluation</button>
+
+        <div class="progress-wrap hidden" id="progressWrap">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-label" id="progressLabel">Evaluating 0 / 0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RIGHT PANEL: Dashboard + Results ============ -->
+    <section class="panel results-panel">
+
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">◎</div>
+        <h3>No evaluation yet</h3>
+        <p>Upload a document and run an evaluation to see grounding results here.</p>
+      </div>
+
+      <div id="dashboard" class="dashboard hidden">
+        <h2 class="panel-title">Summary</h2>
+        <div class="dashboard-grid">
+          <div class="chart-card">
+            <canvas id="summaryChart" width="220" height="220"></canvas>
+          </div>
+          <div class="stat-cards">
+            <div class="stat-card stat-yes">
+              <span class="stat-num" id="statYes">0</span>
+              <span class="stat-label">Fully Grounded</span>
+            </div>
+            <div class="stat-card stat-partial">
+              <span class="stat-num" id="statPartial">0</span>
+              <span class="stat-label">Partially Grounded</span>
+            </div>
+            <div class="stat-card stat-no">
+              <span class="stat-num" id="statNo">0</span>
+              <span class="stat-label">Hallucinated</span>
+            </div>
+            <div class="stat-card stat-error hidden" id="statErrorCard">
+              <span class="stat-num" id="statError">0</span>
+              <span class="stat-label">Errors (not counted as hallucinated)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultsList" class="results-list"></div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer-note">
+    Hallucination Catcher &mdash; LLM-as-a-judge grounding evaluator built with Flask, Gemini &amp; ChromaDB.
+  </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
